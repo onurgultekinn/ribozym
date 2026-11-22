@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "department_report.schema.json",
+  "title": "StandardDepartmentReport (A3 output, sealed)",
+  "type": "object",
+  "required": ["schema_version", "spec_id", "generated_at", "generated_by", "final_status", "summary", "cost"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "spec_id": { "type": "string", "pattern": "^spec-[0-9]{8}-[0-9]{3}$" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "generated_by": { "type": "string", "enum": ["A3"] },
+    "final_status": { "type": "string", "enum": ["success", "partial", "failed"] },
+    "duration_seconds": { "type": "integer" },
+    "summary": {
+      "type": "object",
+      "required": ["tasks_total", "tasks_done", "tasks_failed", "tasks_skipped", "retries", "escalations"],
+      "properties": {
+        "tasks_total": { "type": "integer" },
+        "tasks_done": { "type": "integer" },
+        "tasks_failed": { "type": "integer" },
+        "tasks_skipped": { "type": "integer" },
+        "retries": { "type": "integer" },
+        "escalations": { "type": "integer" }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "required": ["total_usd", "breakdown", "budget_limit_usd", "budget_used_pct"],
+      "properties": {
+        "total_usd": { "type": "number" },
+        "breakdown": {
+          "type": "object",
+          "properties": {
+            "local_inference": { "type": "number" },
+            "cloud_llm": { "type": "number" },
+            "web_access": { "type": "number" }
+          }
+        },
+        "cache_savings_usd": { "type": "number" },
+        "budget_limit_usd": { "type": "number" },
+        "budget_used_pct": { "type": "number" }
+      }
+    },
+    "quality_tradeoff": {
+      "description": "v2.47 B3: price-leaning model demotions under budget pressure; silent quality loss is forbidden",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["task_id", "model", "tier_demoted_from", "reason"],
+        "properties": {
+          "task_id": { "type": "string" },
+          "model": { "type": "string" },
+          "tier_demoted_from": { "type": "string", "enum": ["high", "medium", "low", "none"] },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "agent", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "agent": { "type": "string" },
+          "status": { "type": "string" },
+          "duration_seconds": { "type": "integer" },
+          "tokens": {
+            "type": "object",
+            "properties": {
+              "in": { "type": "integer" },
+              "out": { "type": "integer" },
+              "cached": { "type": "integer" }
+            }
+          },
+          "cost_usd": { "type": "number" },
+          "model": { "type": ["string", "null"] },
+          "artifacts": { "type": "array", "items": { "type": "string" } },
+          "errors": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "source_files": { "type": "array", "items": { "type": "string" } },
+        "tests": { "type": "array", "items": { "type": "string" } },
+        "docs": { "type": "array", "items": { "type": "string" } },
+        "devops": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "traceability": {
+      "description": "Requirement -> task -> evidence map (v2)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirement_id", "task_ids", "status"],
+        "properties": {
+          "requirement_id": { "type": "string" },
+          "task_ids": { "type": "array", "items": { "type": "string" } },
+          "evidence": { "type": "string" },
+          "test_id": { "type": ["string", "null"] },
+          "status": { "type": "string", "enum": ["met", "partially_met", "unmet"] }
+        }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "required": ["checked_by", "spec_match_pct", "unmet_requirements"],
+      "properties": {
+        "checked_by": { "type": "string", "enum": ["A1"] },
+        "spec_match_pct": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "status"],
+            "properties": {
+              "id": { "type": "string" },
+              "status": { "type": "string", "enum": ["met", "partially_met", "unmet"] },
+              "evidence": { "type": "string" }
+            }
+          }
+        },
+        "unmet_requirements": { "type": "array", "items": { "type": "string" } },
+        "acceptance_criteria_passed": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "idea_audit": {
+      "description": "User suggestion loop audit: what was proposed, its impact, the decision (v2.7)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["idea_id", "proposal", "decision"],
+        "properties": {
+          "idea_id": { "type": "string" },
+          "proposal": { "type": "string" },
+          "impact_summary": { "type": "string" },
+          "decision": { "type": "string", "enum": ["integrated", "rejected", "deferred", "withdrawn"] }
+        }
+      }
+    },
+    "health_notes": {
+      "description": "v2.27: run-end summary of small self-corrections (A2 health card content source)",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "executive_summary": { "type": "string", "maxLength": 1200 },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "next_steps": { "type": "array", "items": { "type": "string" } }
+  }
+}

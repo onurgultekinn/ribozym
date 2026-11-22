@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "spec_id": "spec-20260912-001",
+  "generated_at": "2026-09-12T10:30:00Z",
+  "generated_by": "A2",
+  "final_status": "success",
+  "duration_seconds": 1800,
+  "summary": {
+    "tasks_total": 2,
+    "tasks_done": 2,
+    "tasks_failed": 0,
+    "tasks_skipped": 0,
+    "retries": 0,
+    "escalations": 0
+  },
+  "cost": {
+    "total_usd": 0.042,
+    "breakdown": {
+      "local_inference": 0.0,
+      "cloud_llm": 0.038,
+      "web_access": 0.004
+    },
+    "cache_savings_usd": 0.018,
+    "budget_limit_usd": 1.5,
+    "budget_used_pct": 2.8
+  },
+  "quality_tradeoff": [],
+  "tasks": [
+    {
+      "id": "T1",
+      "agent": "A5",
+      "status": "success",
+      "duration_seconds": 75,
+      "tokens": {
+        "in": 2100,
+        "out": 1400,
+        "cached": 800
+      },
+      "cost_usd": 0.008,
+      "model": "qwen/qwen3-coder-next",
+      "artifacts": [
+        "Cargo.toml",
+        "src/main.rs"
+      ],
+      "errors": []
+    }
+  ],
+  "artifacts": {
+    "source_files": [
+      "src/main.rs",
+      "src/routes.rs"
+    ],
+    "tests": [
+      "tests/integration.rs"
+    ],
+    "docs": [
+      "README.md"
+    ],
+    "devops": []
+  },
+  "traceability": [
+    {
+      "requirement_id": "R1",
+      "task_ids": [
+        "T2"
+      ],
+      "evidence": "src/routes.rs:12",
+      "test_id": "AC1",
+      "status": "met"
+    },
+    {
+      "requirement_id": "R2",
+      "task_ids": [
+        "T1"
+      ],
+      "evidence": "src/routes.rs:31",
+      "test_id": "AC1",
+      "status": "met"
+    }
+  ],
+  "compliance": {
+    "checked_by": "A1",
+    "spec_match_pct": 100,
+    "requirements": [
+      {
+        "id": "R1",
+        "status": "met",
+        "evidence": "src/routes.rs:12"
+      }
+    ],
+    "unmet_requirements": [],
+    "acceptance_criteria_passed": [
+      "AC1"
+    ]
+  },
+  "idea_audit": [],
+  "health_notes": [],
+  "executive_summary": "Project completed successfully. 2 tasks, 0 retries, 0 escalations. Total cost $0.042. All requirements met.",
+  "warnings": [],
+  "next_steps": [
+    "User may push to GitHub"
+  ]
+}

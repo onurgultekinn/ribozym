@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0",
+  "id": "spec-20260912-001",
+  "run_id": "run-9f3a",
+  "version": "1.0.0",
+  "created_at": "2026-09-12T10:00:00Z",
+  "created_by": "A1",
+  "source": {
+    "raw_input_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "raw_input_path": "runs/spec-20260912-001/raw_input.md"
+  },
+  "title": "Minimal task-list REST API",
+  "description": "Small HTTP service storing task items with list/create/complete endpoints.",
+  "mode": "greenfield",
+  "target_path": null,
+  "language": {
+    "primary": "rust",
+    "confidence": 0.95,
+    "source": "explicit"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Provide a task listing endpoint",
+      "priority": "must",
+      "category": "functional"
+    },
+    {
+      "id": "R2",
+      "text": "Provide a task creation endpoint",
+      "priority": "must",
+      "category": "functional"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C1",
+      "text": "Framework must be axum"
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC1",
+      "text": "cargo test passes including endpoint integration test",
+      "verifiable_by": "A4",
+      "measurement": "exit_code == 0"
+    }
+  ],
+  "out_of_scope": [
+    "Authentication"
+  ],
+  "open_questions": [],
+  "assumptions": [
+    {
+      "id": "AS1",
+      "assumption": "In-memory storage is acceptable for the first version"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "title": "Web framework: axum",
+      "choice": "axum",
+      "alternatives_considered": [
+        {
+          "option": "actix-web",
+          "rejected_because": "steeper learning curve"
+        },
+        {
+          "option": "rocket",
+          "rejected_because": "async ecosystem lagged"
+        }
+      ],
+      "evidence": [
+        "docs.rs/axum",
+        "crates.io activity"
+      ]
+    }
+  ],
+  "mvp_scope": [
+    "R1",
+    "R2"
+  ],
+  "budget": {
+    "max_cost_usd": 1.5,
+    "max_duration_seconds": 7200
+  },
+  "autonomy_level": 1,
+  "approval_required": [
+    "spec",
+    "task_plan",
+    "delivery"
+  ],
+  "compliance_status": "approved",
+  "compliance_notes": []
+}

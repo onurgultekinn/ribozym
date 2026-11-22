@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "task_id": "T1",
+  "files": [
+    {
+      "path": "src/main.rs",
+      "content": "fn main() {\n    println!(\"task list service\");\n}\n"
+    },
+    {
+      "path": "Cargo.toml",
+      "content": "[package]\nname = \"tasklist\"\nversion = \"0.1.0\"\nedition = \"2021\"\n"
+    }
+  ],
+  "notes": "scaffold only; endpoints arrive with T2",
+  "self_check": { "commands": ["cargo check"] }
+}

@@ -1,0 +1,9 @@
+{
+  "seq": 1,
+  "ts": "2026-09-12T10:00:00Z",
+  "spec_id": "spec-20260912-001",
+  "run_id": "run-9f3a",
+  "event": "SomethingHappened",
+  "correlation_id": "op-x",
+  "schema_version": "1.0"
+}

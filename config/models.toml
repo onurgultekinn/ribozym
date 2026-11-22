@@ -1,0 +1,56 @@
+# models.toml — model registry (§11.6)
+# Seeding only: the pool is filled/updated by `ribozym calibrate` (§5.15 bootstrap)
+# and by live run data in task_scores. Unmeasured models cannot be candidates (§10.3).
+# context_limit and task_types tags are used by the A10 selector.
+
+[openrouter]
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api/v1"
+
+[artificial_analysis]
+api_key_env = "AA_API_KEY"          # optional in MVP
+refresh_hours = 24
+
+[selection]
+# v2.42 removed the old 5% exploration quota from run budget;
+# discovery is paid from model_test_quota only.
+price_ceiling_multiplier = 3.0
+min_quality_score = 60
+cache_price_ttl_minutes = 5
+cache_benchmark_ttl_hours = 24
+
+[local]
+# Q1: cloud is the primary engine; local is auxiliary offload only (§10.1)
+server_url_env = "LLAMA_SERVER_URL"
+default_server_url = "http://127.0.0.1:8080"
+model_path = "C:/Users/Rog/qwen_model/"
+model_id = "qwen2.5-coder-7b-instruct-q4_k_m"
+vram_budget_gb = 8
+# Grunt-work whitelist (§10.1): the ONLY task types local may serve.
+# Anything else goes to cloud regardless of free VRAM. Empty = local disabled.
+eligible_task_types = [
+  "boilerplate",    # template/scaffolding code (A5 low-difficulty lane)
+  "template_code",
+  "test_skeleton",  # simple test scaffolds (A4 bulk lane)
+  "classification", # routing tags, difficulty labels (A10 rules lane)
+  "schema_repair",  # §14 repair turn on cheap structured JSON
+  "summarization",  # archive/ledger summaries
+]
+
+[[model]]
+id = "qwen/qwen3-coder-next"
+task_types = ["code", "plan", "verify", "report"]
+context_limit = 131072
+capability = "high"
+cost_tier = "low"
+blacklisted = false
+notes = "Fast, cheap, ideal for code"
+
+[[model]]
+id = "google/gemini-2.5-flash"
+task_types = ["plan", "report", "verify"]
+context_limit = 1048576
+capability = "high"
+cost_tier = "low"
+blacklisted = true
+blacklist_reason = "Example entry: inconsistent on real coding tasks (low verify scores)"

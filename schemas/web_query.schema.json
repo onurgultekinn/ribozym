@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "web_query.schema.json",
+  "title": "WebQuery (A11 input)",
+  "type": "object",
+  "required": ["id", "ask"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^q-[0-9]+$" },
+    "ask": { "type": "string" },
+    "require_fresh": { "type": "boolean", "default": false },
+    "min_sources": { "type": "integer", "minimum": 1, "default": 2 }
+  }
+}

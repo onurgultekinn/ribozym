@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "verification_score.schema.json",
+  "title": "VerificationScore (A11 verify-hat output; blind by construction)",
+  "type": "object",
+  "required": ["query_id", "confidence", "layers"],
+  "properties": {
+    "query_id": { "type": "string", "pattern": "^q-[0-9]+$" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"], "description": "high >= 75 | medium 50-74 | low < 50" },
+    "layers": {
+      "type": "object",
+      "required": ["rules", "llm"],
+      "properties": {
+        "rules": {
+          "type": "object",
+          "description": "Code layer: distinct-domain count, source-type weights (docs/gov/edu=1.0, blog=0.4), age <= 24 months, contradiction scan",
+          "required": ["score", "distinct_domains"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 100 },
+            "distinct_domains": { "type": "integer", "minimum": 1 },
+            "contradictions_found": { "type": "integer" }
+          }
+        },
+        "llm": {
+          "type": ["object", "null"],
+          "description": "Null in MVP (rules_only: true); different model family from the search call (exclusion rule)",
+          "required": ["score", "objections"],
+          "properties": {
+            "score": { "type": "number", "minimum": 0, "maximum": 100 },
+            "objections": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "rules_only": {
+      "type": "boolean",
+      "default": true,
+      "description": "MVP: confidence derived from rule score only; LLM blind scoring opens at v1.0"
+    },
+    "behavior": {
+      "type": "string",
+      "enum": ["use", "label_in_context", "drop_unverified"],
+      "description": "high=use | medium=label_in_context | low=drop_unverified (goes to A6 as unverified)"
+    }
+  }
+}

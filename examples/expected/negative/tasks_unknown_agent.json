@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "spec_id": "spec-20260912-001",
+  "created_at": "2026-09-12T10:05:00Z",
+  "created_by": "A2",
+  "revision": 1,
+  "tasks": [
+    {
+      "id": "T1",
+      "spec_requirement_ids": [
+        "R1",
+        "R2"
+      ],
+      "title": "Scaffold axum project",
+      "description": "Create cargo project with axum skeleton",
+      "department": "Software Engineering",
+      "assigned_agent": "A13",
+      "dependencies": [],
+      "target": "hybrid",
+      "toolchain": "rust",
+      "acceptance": {
+        "verifiable_by": "A7",
+        "criteria": "cargo check exit_code == 0"
+      },
+      "estimated": {
+        "tokens_in": 2000,
+        "tokens_out": 1500,
+        "cost_usd": 0.01,
+        "duration_seconds": 60
+      },
+      "difficulty": {
+        "label": "easy",
+        "source": "rules"
+      },
+      "file_ownership": [
+        "Cargo.toml",
+        "src/main.rs"
+      ],
+      "artifacts_expected": [
+        "Cargo.toml",
+        "src/main.rs"
+      ],
+      "artifacts_produced": [],
+      "blocked_by": [],
+      "status": "pending",
+      "retry_count": 0,
+      "escalation_level": 0,
+      "notes": ""
+    },
+    {
+      "id": "T2",
+      "spec_requirement_ids": [
+        "R1"
+      ],
+      "title": "Implement list endpoint",
+      "description": "GET /tasks handler with in-memory store",
+      "department": "Software Engineering",
+      "assigned_agent": "A5",
+      "dependencies": [
+        "T1"
+      ],
+      "target": "cloud",
+      "toolchain": "rust",
+      "acceptance": {
+        "verifiable_by": "A4",
+        "criteria": "integration test GET /tasks returns 200"
+      },
+      "estimated": null,
+      "difficulty": {
+        "label": "medium",
+        "source": "llm",
+        "rationale": "handler + store wiring, rules inconclusive"
+      },
+      "file_ownership": [
+        "src/routes.rs"
+      ],
+      "artifacts_expected": [
+        "src/routes.rs"
+      ],
+      "artifacts_produced": [],
+      "blocked_by": [],
+      "status": "pending",
+      "retry_count": 0,
+      "escalation_level": 0,
+      "notes": ""
+    }
+  ],
+  "execution_order": [
+    "T1",
+    "T2"
+  ],
+  "parallel_groups": [],
+  "critical_path": [
+    "T1",
+    "T2"
+  ],
+  "status_summary": {
+    "total": 2,
+    "pending": 2,
+    "in_progress": 0,
+    "done": 0,
+    "failed": 0,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,5 @@
+{"seq": 1, "ts": "2026-09-12T10:00:00Z", "spec_id": "spec-20260912-001", "run_id": "run-9f3a", "task_id": null, "event": "SpecValidated", "correlation_id": "op-0001", "schema_version": "1.0", "data": {"decisions_locked": 1}}
+{"seq": 2, "ts": "2026-09-12T10:05:00Z", "spec_id": "spec-20260912-001", "run_id": "run-9f3a", "task_id": null, "event": "TasksCreated", "correlation_id": "op-0002", "schema_version": "1.0", "data": {"task_count": 2}}
+{"seq": 3, "ts": "2026-09-12T10:06:00Z", "spec_id": "spec-20260912-001", "run_id": "run-9f3a", "task_id": "T1", "event": "TaskStarted", "correlation_id": "op-0003", "schema_version": "1.0", "data": {"agent": "A5"}}
+{"seq": 4, "ts": "2026-09-12T10:07:15Z", "spec_id": "spec-20260912-001", "run_id": "run-9f3a", "task_id": "T1", "event": "TaskCompleted", "correlation_id": "op-0003", "schema_version": "1.0", "data": {"cost_usd": 0.008}}
+{"seq": 5, "ts": "2026-09-12T10:08:00Z", "spec_id": "spec-20260912-001", "run_id": "run-9f3a", "task_id": null, "event": "ModelSelected", "correlation_id": "op-0004", "schema_version": "1.0", "data": {"model": "qwen/qwen3-coder-next", "task_type": "code", "difficulty_source": "rules"}}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "compliance_check.schema.json",
+  "title": "ComplianceCheck (A1 final-review output; delivery gate data source)",
+  "type": "object",
+  "required": ["schema_version", "spec_id", "checked_by", "spec_match_pct", "requirements", "verdict"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "spec_id": { "type": "string", "pattern": "^spec-[0-9]{8}-[0-9]{3}$" },
+    "checked_by": { "type": "string", "enum": ["A1"] },
+    "model": { "type": "string" },
+    "spec_match_pct": { "type": "integer", "minimum": 0, "maximum": 100, "description": "Delivered is only possible at 100 (P5)" },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "evidence"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^R[0-9]+$" },
+          "status": { "type": "string", "enum": ["met", "partially_met", "unmet"] },
+          "evidence": { "type": "string", "description": "Code-level proof, e.g. src/routes.rs:12" },
+          "test_id": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "decisions_compliance": {
+      "description": "ADR compliance; measured with code-produced evidence (A7/A4: dependency manifest, import scan, test inventory), not A1's word alone",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["decision_id", "title", "status"],
+        "properties": {
+          "decision_id": { "type": "string", "pattern": "^D[0-9]+$" },
+          "title": { "type": "string" },
+          "status": { "type": "string", "enum": ["met", "violated"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "assumptions_audit": {
+      "description": "v2.4: assumptions are checked against reality at FinalReview; a falsified assumption lowers spec_match_pct",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["assumption_id", "held"],
+        "properties": {
+          "assumption_id": { "type": "string" },
+          "held": { "type": "boolean" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "unmet_requirements": { "type": "array", "items": { "type": "string" } },
+    "verdict": { "type": "string", "enum": ["approved", "needs_revision", "rejected"] }
+  }
+}

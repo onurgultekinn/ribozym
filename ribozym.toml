@@ -1,0 +1,64 @@
+# ribozym.toml — project-level configuration
+# Precedence (low -> high): ~/.ribozym/config.toml < this file < env vars < CLI flags
+# Language policy: config files are English (rule 1, §24).
+
+[run]
+max_concurrency = 2                # DAG worker pool (§6.2)
+gate_timeout_seconds = 1200        # low-risk gates auto-approve on timeout (§9)
+default_autonomy_level = 1
+
+[budget]
+monthly_usd = 5.00                 # system-wide monthly budget, user-set (§5.15 m1)
+test_quota_pct = 10                # share reserved for model benchmarking
+replan_autonomous_cost_pct = 10    # replan costing <= this % of run budget is autonomous (v2.28)
+soft_limit_pct = 80                # BudgetWarning + price-leaning selection (§8.2)
+hard_limit_pct = 100               # cloud calls rejected -> local; else Paused(budget) (v2.47 B3)
+price_stale_margin_pct = 15        # applied to last-known price when PRICE_STALE (§5.2)
+
+[research]
+research_quota_pct = 5             # A6 R&D experiments draw from this (§5.11 m4)
+max_concurrent_experiments = 1     # background, never blocks the main flow
+
+[a10_selection]
+price_poll_interval_s = 300        # OpenRouter price poll: 5 min (v2.43)
+quality_score_refresh_hours = 24   # Artificial Analysis scores: daily
+bench_history_window = 20          # last N real-run attempts in tier ranking
+blacklist_consecutive_failures = 3 # same model+task_type failing A4/A7 3x -> blacklist (§10.3)
+verify_min_confidence = 50         # A11 verify mid-score < 50 over window -> review
+
+[archive]
+compression = "zstd"
+level = 3                          # low-hardware friendly (§7.6)
+integrity = "sha256-manifest"      # v2.47 B2: manifest verified on every read
+
+[web]
+fetcher = "agent-reach"            # MVP primary (Q5); fallback: duckduckgo-html
+fallback = "duckduckgo-html"
+cache_ttl_s = 86400                # 24 h (§13.2)
+# Backend command argv (agent-reach / any content collector): JSON array of
+# {"url","type","content"} on stdout. "{ask}" receives the query as ONE argv
+# element — no shell. Empty = A11 searches fail visibly (WEB_UNAVAILABLE).
+# fetch_argv = ["agent-reach", "search", "--json", "{ask}"]
+
+[toolchains.rust]
+# Full argv vectors; no shell; unknown general flags rejected (§12.2)
+allowed = [
+  "cargo check", "cargo test", "cargo clippy", "cargo fmt",
+  "cargo audit", "cargo audit --version", "cargo build --release",
+]
+fs_read  = ["workdir/**", "runs/<spec_id>/artifacts/**"]
+fs_write = ["workdir/**"]
+env_scrub = "deny"                 # strip *_KEY/*_TOKEN/*_SECRET from subprocess env
+timeout_s = 300
+output_cap_kb = 1024
+
+[sandbox]
+# A7 isolation; docker optional at preflight (§12.4)
+backend = "docker"                 # "docker" | "process" (fallback)
+network = "none"                   # generated-project tests run without network
+
+[errors]
+fix_loop_max_iterations = 3        # E1 (§8.1)
+e0_max_retries = 3                 # E0 backoff 5s -> 15s -> 45s (full jitter)
+e0_backoff_ms = [5000, 15000, 45000]
+final_review_crisis_max = 2        # v2.47 B1: FinalReview->Crisis loop cap

@@ -1,0 +1,123 @@
+# agents.toml — agent registry (§11.7)
+# model_tier is a STARTING HINT only; final per-call selection belongs to A10 (v2.23).
+# tier: low | medium | high | none (none = fully deterministic, no LLM calls)
+
+[[agent]]
+id = "A1"
+title = "Chief Architect & Referee"
+prompt_file = "config/prompts/A1_architect.md"
+model_tier = "high"                # stage-dependent; see §5.4A map
+escalation_tier = "high"
+max_concurrency = 1
+budget_share_pct = 20
+tools = ["fs.write:workdir"]
+
+[[agent]]
+id = "A2"
+title = "CEO"
+prompt_file = "config/prompts/A2_ceo.md"
+model_tier = "high"
+escalation_tier = "high"
+max_concurrency = 1
+budget_share_pct = 10
+tools = []
+
+[[agent]]
+id = "A3"
+title = "Chief Reporter"
+prompt_file = "config/prompts/A3_reporter.md"
+model_tier = "low"
+escalation_tier = "medium"
+max_concurrency = 1
+budget_share_pct = 5
+tools = ["fs.write:runs"]
+
+[[agent]]
+id = "A4"
+title = "Test Architect"
+prompt_file = "config/prompts/A4_test_architect.md"
+model_tier = "low"                 # simple unit tests local; hard benchmarks cloud
+escalation_tier = "high"
+max_concurrency = 1
+budget_share_pct = 15
+tools = ["cargo.test", "fs.write:tests"]   # tests/ is A4-only property (§5.9)
+
+[[agent]]
+id = "A5"
+title = "Lead Coder"
+prompt_file = "config/prompts/A5_coder.md"
+model_tier = "low"                 # boilerplate local; algorithms cloud (§5.10)
+escalation_tier = "high"
+max_concurrency = 2
+budget_share_pct = 30
+tools = ["cargo.check", "cargo.build", "fs.write:workdir"]  # tests/ FORBIDDEN
+
+[[agent]]
+id = "A6"
+title = "Researcher (R&D Lab)"
+prompt_file = "config/prompts/A6_researcher.md"
+model_tier = "low"                 # escalates by hypothesis difficulty
+escalation_tier = "high"
+max_concurrency = 1
+budget_share_pct = 5               # inside research quota
+tools = ["fs.write:workdir"]
+
+[[agent]]
+id = "A7"
+title = "Sandbox & Security"
+prompt_file = "config/prompts/A7_security.md"
+model_tier = "none"                # deterministic; selector only for deep vuln analysis
+escalation_tier = "medium"
+max_concurrency = 2
+budget_share_pct = 0
+tools = ["sandbox.run", "cargo.audit", "fs.scan"]
+
+[[agent]]
+id = "A8"
+title = "Technical Writer & Repo Manager"
+prompt_file = "config/prompts/A8_writer.md"
+model_tier = "low"
+escalation_tier = "medium"
+max_concurrency = 1
+budget_share_pct = 5
+tools = ["git.commit", "git.push", "fs.write:docs"]
+
+[[agent]]
+id = "A9"
+title = "Release & Distribution"
+prompt_file = "config/prompts/A9_release.md"
+model_tier = "none"                # template + decisions[] first; cheap API per balance rule (§5.14 m2)
+escalation_tier = "low"
+max_concurrency = 1
+budget_share_pct = 5
+tools = ["fs.write:workdir"]
+
+[[agent]]
+id = "A10"
+title = "Budget Planner & Resource Manager"
+prompt_file = "config/prompts/A10_budget.md"
+model_tier = "none"                # rules first; single cheap LLM call only in difficulty tie (v2.44)
+escalation_tier = "low"
+max_concurrency = 1
+budget_share_pct = 0               # its own calls are written to model_usage too
+tools = ["sqlite.read", "http.internal"]   # technical connections exempt from A11 gate (§13.1)
+
+[[agent]]
+id = "A11"
+title = "Web Access & Verification"
+prompt_file = "config/prompts/A11_web.md"
+model_tier = "high"                # fetch; verify uses a DIFFERENT model (family exclusion, §13.3)
+escalation_tier = "high"
+max_concurrency = 1
+budget_share_pct = 5
+tools = ["web.fetch"]
+
+[[agent]]
+id = "A12"
+title = "Archive & Courier"
+prompt_file = "config/prompts/A12_archive.md"
+model_tier = "none"                # deterministic: collect, compress, stamp; API only per balance rule (§5.8 m4)
+escalation_tier = "low"
+max_concurrency = 1
+budget_share_pct = 0
+tools = ["fs.write:archive", "zstd.compress"]

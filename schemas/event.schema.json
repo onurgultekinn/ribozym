@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "event.schema.json",
+  "title": "Event envelope (events.jsonl line)",
+  "type": "object",
+  "required": ["seq", "ts", "spec_id", "run_id", "event", "correlation_id", "schema_version"],
+  "properties": {
+    "seq": { "type": "integer", "minimum": 1, "description": "Monotonically increasing within a run; resume and duplicate-write detection" },
+    "ts": { "type": "string", "format": "date-time", "description": "UTC ISO-8601 with Z suffix" },
+    "spec_id": { "type": "string", "pattern": "^spec-[0-9]{8}-[0-9]{3}$" },
+    "run_id": { "type": "string", "pattern": "^run-[a-z0-9]+$" },
+    "task_id": { "type": ["string", "null"], "pattern": "^T[0-9]+$" },
+    "event": {
+      "type": "string",
+      "enum": [
+        "SpecReceived", "SpecValidated", "SpecRejected", "SpecRevised",
+        "TasksCreated", "TasksRevised", "TaskGraphRejected",
+        "TaskStarted", "TaskCompleted", "TaskFailed", "TaskRetried", "TaskSkipped", "TaskBlocked", "TaskOwnershipConflict",
+        "EscalatedToCEO", "CrisisResolved", "EscalatedToCloud", "EscalatedToUser",
+        "GateRequested", "GateTimeout", "HumanApprovalRequested", "HumanApprovalGranted", "HumanApprovalDenied",
+        "UserIdeaProposed", "UserIdeaIntegrated", "UserIdeaRejected",
+        "Delivered", "DeliveryRejected",
+        "BudgetWarning", "BudgetExceeded", "MonthlyBudgetExceeded",
+        "ModelSelected", "ModelBlacklisted", "NewModelDiscovered", "ModelRepairTried",
+        "WebSearchRequested", "WebSearchCompleted", "VerificationScored", "WebContentFlaggedInjection",
+        "ArchiveCorrupt",
+        "PreflightFailed", "SandboxViolation", "LockStolen"
+      ]
+    },
+    "correlation_id": { "type": "string", "description": "References ledger.op_id: which operation produced this event" },
+    "schema_version": { "type": "string", "const": "1.0" },
+    "data": {
+      "type": "object",
+      "description": "Event-specific payload; unknown fields preserved (forward-compat)"
+    }
+  }
+}

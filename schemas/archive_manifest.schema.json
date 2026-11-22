@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "archive_manifest.schema.json",
+  "title": "Archive manifest (v2.47 B2: integrity of runs/<spec_id>/archive/)",
+  "type": "object",
+  "required": ["schema_version", "spec_id", "sections"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "spec_id": { "type": "string", "pattern": "^spec-[0-9]{8}-[0-9]{3}$" },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "sha256", "size_bytes", "written_at"],
+        "properties": {
+          "file": { "type": "string", "description": "e.g. 001-mulakat.zst, 002-analiz.zst" },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "size_bytes": { "type": "integer", "minimum": 0 },
+          "written_at": { "type": "string", "format": "date-time" },
+          "kind": {
+            "type": "string",
+            "description": "Which pipeline stage produced the section (interview, analysis, decision, code, test, report, rd_experiment, ...)"
+          }
+        }
+      }
+    },
+    "integrity_rule": {
+      "type": "string",
+      "const": "every read verifies sha256; corrupt or missing section forbids silent continuation — A12 raises ArchiveCorrupt, section is rebuilt from ledger/events or run parks at NeedsUser"
+    }
+  }
+}

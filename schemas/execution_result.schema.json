@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "execution_result.schema.json",
+  "title": "ExecutionResult (agent output contract)",
+  "type": "object",
+  "required": ["schema_version", "task_id", "agent_id", "started_at", "finished_at", "status", "summary"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "task_id": { "type": "string", "pattern": "^T[0-9]+$" },
+    "agent_id": { "type": "string", "pattern": "^A(1[0-2]|[1-9])$" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["success", "failed", "skipped", "escalated", "blocked"] },
+    "summary": { "type": "string" },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "path", "hash", "size_bytes"],
+        "properties": {
+          "type": { "type": "string", "enum": ["source_file", "test_file", "doc_file", "config_file", "binary", "report", "patch", "other"] },
+          "path": { "type": "string" },
+          "hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+          "size_bytes": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "logs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["level", "message", "ts"],
+        "properties": {
+          "level": { "type": "string", "enum": ["trace", "debug", "info", "warn", "error"] },
+          "message": { "type": "string" },
+          "ts": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "model_usage": {
+      "description": "Null for deterministic agents (A7; A9/A10 template paths); populated on LLM paths",
+      "type": ["object", "null"],
+      "required": ["provider", "model", "tokens_in", "tokens_out", "cost_usd"],
+      "properties": {
+        "provider": { "type": "string", "enum": ["openrouter", "local", "mock"] },
+        "model": { "type": "string" },
+        "tokens_in": { "type": "integer" },
+        "tokens_out": { "type": "integer" },
+        "cached_tokens": { "type": "integer" },
+        "cost_usd": { "type": "number" },
+        "cache_savings_usd": { "type": "number" }
+      }
+    },
+    "toolchain_used": { "type": ["string", "null"] },
+    "commands_run": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cmd", "exit_code", "duration_ms"],
+        "properties": {
+          "cmd": { "type": "string" },
+          "exit_code": { "type": "integer" },
+          "duration_ms": { "type": "integer" }
+        }
+      }
+    },
+    "next_agent": { "type": ["string", "null"] },
+    "error": { "type": ["object", "null"] },
+    "escalate_to_ceo": { "type": "boolean" },
+    "human_approval_needed": { "type": "boolean" },
+    "idempotency": {
+      "description": "Resume support: operation ledger link (op_id, input hash)",
+      "type": ["object", "null"],
+      "required": ["op_id", "input_hash"],
+      "properties": {
+        "op_id": { "type": "string" },
+        "input_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

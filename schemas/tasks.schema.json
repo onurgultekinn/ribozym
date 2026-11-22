@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tasks.schema.json",
+  "title": "Task DAG (A2 output)",
+  "type": "object",
+  "required": ["schema_version", "spec_id", "created_at", "created_by", "revision", "tasks"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "spec_id": { "type": "string", "pattern": "^spec-[0-9]{8}-[0-9]{3}$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "created_by": { "type": "string", "enum": ["A2"] },
+    "revision": { "type": "integer", "minimum": 1 },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "spec_requirement_ids", "title", "description", "assigned_agent", "dependencies", "target", "acceptance", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^T[0-9]+$" },
+          "spec_requirement_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^R[0-9]+$" } },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "department": { "type": "string" },
+          "assigned_agent": { "type": "string", "pattern": "^A(1[0-2]|[1-9])$" },
+          "dependencies": { "type": "array", "items": { "type": "string", "pattern": "^T[0-9]+$" } },
+          "target": { "type": "string", "enum": ["local", "cloud", "os", "hybrid"] },
+          "toolchain": { "type": ["string", "null"] },
+          "acceptance": {
+            "type": "object",
+            "required": ["verifiable_by", "criteria"],
+            "properties": {
+              "verifiable_by": { "type": "string" },
+              "criteria": { "type": "string" }
+            }
+          },
+          "estimated": {
+            "type": ["object", "null"],
+            "description": "Deterministic estimate from task_scores history; null = no data, never invented (v2.24)",
+            "properties": {
+              "tokens_in": { "type": "integer" },
+              "tokens_out": { "type": "integer" },
+              "cost_usd": { "type": "number" },
+              "duration_seconds": { "type": "integer" }
+            }
+          },
+          "difficulty": {
+            "description": "A10 difficulty analysis (v2.44)",
+            "type": ["object", "null"],
+            "required": ["label", "source"],
+            "properties": {
+              "label": { "type": "string", "enum": ["easy", "medium", "hard"] },
+              "source": { "type": "string", "enum": ["rules", "llm"] },
+              "rationale": { "type": "string" }
+            }
+          },
+          "file_ownership": {
+            "description": "Paths this task may write; ownership conflicts are serialized by the scheduler",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "artifacts_expected": { "type": "array", "items": { "type": "string" } },
+          "artifacts_produced": { "type": "array", "items": { "type": "string" } },
+          "blocked_by": { "type": "array", "items": { "type": "string" } },
+          "status": { "type": "string", "enum": ["pending", "in_progress", "done", "failed", "skipped", "blocked"] },
+          "retry_count": { "type": "integer", "minimum": 0 },
+          "escalation_level": { "type": "integer", "enum": [0, 1, 2, 3, 4] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "execution_order": { "type": "array", "items": { "type": "string", "pattern": "^T[0-9]+$" } },
+    "parallel_groups": {
+      "description": "Informational only; scheduler derives topological order itself",
+      "type": "array",
+      "items": { "type": "array", "items": { "type": "string" } }
+    },
+    "critical_path": { "type": "array", "items": { "type": "string" } },
+    "status_summary": {
+      "type": "object",
+      "properties": {
+        "total": { "type": "integer" },
+        "pending": { "type": "integer" },
+        "in_progress": { "type": "integer" },
+        "done": { "type": "integer" },
+        "failed": { "type": "integer" },
+        "skipped": { "type": "integer" }
+      }
+    }
+  }
+}

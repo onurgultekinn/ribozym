@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "task_id": "T1",
+  "agent_id": "A5",
+  "started_at": "2026-09-12T10:06:00Z",
+  "finished_at": "2026-09-12T10:07:15Z",
+  "status": "success",
+  "summary": "Cargo project created, cargo check passed",
+  "artifacts": [
+    {
+      "type": "source_file",
+      "path": "src/main.rs",
+      "hash": "md5:zzz",
+      "size_bytes": 342
+    }
+  ],
+  "logs": [
+    {
+      "level": "info",
+      "message": "cargo init executed",
+      "ts": "2026-09-12T10:06:10Z"
+    }
+  ],
+  "model_usage": {
+    "provider": "openrouter",
+    "model": "qwen/qwen3-coder-next",
+    "tokens_in": 2100,
+    "tokens_out": 1400,
+    "cached_tokens": 800,
+    "cost_usd": 0.008,
+    "cache_savings_usd": 0.004
+  },
+  "toolchain_used": "rust",
+  "commands_run": [
+    {
+      "cmd": "cargo init",
+      "exit_code": 0,
+      "duration_ms": 320
+    }
+  ],
+  "next_agent": "A7",
+  "error": null,
+  "escalate_to_ceo": false,
+  "human_approval_needed": false,
+  "idempotency": {
+    "op_id": "op-77b1",
+    "input_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  }
+}
